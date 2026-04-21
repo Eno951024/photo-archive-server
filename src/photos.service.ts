@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+type Photo = {
+  id: string;
+  date: string;
+  url: string;
+};
+
 @Injectable()
 export class PhotosService {
   private supabase: SupabaseClient;
@@ -12,7 +18,7 @@ export class PhotosService {
     );
   }
 
-  async getPhotos() {
+  async getPhotos(): Promise<Photo[]> {
     const { data, error } = await this.supabase
       .from('photos')
       .select('*')
@@ -22,6 +28,6 @@ export class PhotosService {
       throw new Error(error.message);
     }
 
-    return data;
+    return (data ?? []) as Photo[];
   }
 }
