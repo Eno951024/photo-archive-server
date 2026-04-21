@@ -8,9 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors();
-  
-  // ポートの変更
+
   await app.listen(3001);
 }
 
-bootstrap();
+void bootstrap();

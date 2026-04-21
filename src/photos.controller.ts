@@ -6,7 +6,7 @@ export class PhotosController {
   constructor(private readonly photosService: PhotosService) {}
 
   @Get()
-  async getPhotos() {
+  async getPhotos(): Promise<any[]> {
     return this.photosService.getPhotos();
   }
 }
