@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 @Injectable()
 export class PhotosService {
-  private supabase;
+  private supabase: SupabaseClient;
 
   constructor() {
     this.supabase = createClient(
