@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
 type Photo = {
   id: string;
@@ -9,7 +9,7 @@ type Photo = {
 
 @Injectable()
 export class PhotosService {
-  private supabase: SupabaseClient<any, 'public', any>;
+  private supabase: ReturnType<typeof createClient>;
 
   constructor() {
     this.supabase = createClient(
