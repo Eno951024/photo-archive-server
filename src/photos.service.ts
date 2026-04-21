@@ -9,7 +9,7 @@ type Photo = {
 
 @Injectable()
 export class PhotosService {
-  private supabase: SupabaseClient;
+  private supabase: SupabaseClient<any, 'public', any>;
 
   constructor() {
     this.supabase = createClient(
