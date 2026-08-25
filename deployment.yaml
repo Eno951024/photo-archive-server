@@ -1,0 +1,28 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: photo-archive-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: photo-archive-api
+  template:
+    metadata:
+      labels:
+        app: photo-archive-api
+    spec:
+      containers:
+        - name: photo-archive-api
+          image: kamo8352/photo-archiv-server:v0.0.2
+
+          env:
+            - name: SUPABASE_URL
+              value: "https://dyfvwhrtmlwhryfmvixq.supabase.co"
+
+            - name: SUPABASE_KEY
+              value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZnZ3aHJ0bWx3aHJ5Zm12aXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzNTYwMTUsImV4cCI6MjA4NjkzMjAxNX0.Zn-tvSuofHo1w4U12q5onVPp2xA8KE7QoCVVD1KG9Ig"
+
+          ports:
+            - containerPort: 3001
