@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhotosService = void 0;
 const common_1 = require("@nestjs/common");
 const supabase_js_1 = require("@supabase/supabase-js");
+const STORAGE_BUCKET = 'photo_archive';
 let PhotosService = class PhotosService {
     supabase;
     constructor() {
@@ -25,7 +26,68 @@ let PhotosService = class PhotosService {
         if (error) {
             throw new Error(error.message);
         }
+        return (data ?? []);
+    }
+    async createPhoto(photo) {
+        const { data, error } = await this.supabase.from('photos')
+            .insert(photo)
+            .select()
+            .single();
+        if (error) {
+            throw new Error(error.message);
+        }
         return data;
+    }
+    async updatePhoto(id, photo) {
+        const { data, error } = await this.supabase.from('photos')
+            .update(photo)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) {
+            throw new Error(error.message);
+        }
+        return data;
+    }
+    async deletePhoto(id) {
+        const { data: photo, error: fetchError } = await this.supabase.from('photos')
+            .select('images')
+            .eq('id', id)
+            .single();
+        if (fetchError) {
+            throw new Error(fetchError.message);
+        }
+        const paths = (photo?.images ?? [])
+            .map((url) => url.split(`/${STORAGE_BUCKET}/`)[1])
+            .filter(Boolean);
+        if (paths.length) {
+            const { error: storageError } = await this.supabase.storage
+                .from(STORAGE_BUCKET)
+                .remove(paths);
+            if (storageError) {
+                throw new Error(storageError.message);
+            }
+        }
+        const { error: deleteError } = await this.supabase
+            .from('photos')
+            .delete()
+            .eq('id', id);
+        if (deleteError) {
+            throw new Error(deleteError.message);
+        }
+    }
+    async uploadPhotoFile(file) {
+        const fileName = `${Date.now()}_${encodeURIComponent(file.originalname)}`;
+        const { error } = await this.supabase.storage
+            .from(STORAGE_BUCKET)
+            .upload(fileName, file.buffer, { contentType: file.mimetype });
+        if (error) {
+            throw new Error(error.message);
+        }
+        const { data } = this.supabase.storage
+            .from(STORAGE_BUCKET)
+            .getPublicUrl(fileName);
+        return data.publicUrl;
     }
 };
 exports.PhotosService = PhotosService;
